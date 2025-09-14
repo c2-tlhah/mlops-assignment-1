@@ -1,318 +1,18 @@
 # MLOps Assignment 1: Model Training & Comparison with MLflow Tracking
 
-A comprehensive MLOps project demonstrating machine learning model training, evaluation, comparison, and experiment tracking using MLflow.
-
-## 🎯 Project Overview
-
-This project implements a complete MLOps workflow that includes:
-- **Data Loading & Preprocessing**: Automated dataset loading with the Iris classification dataset
-- **Model Training**: Training multiple ML models (Logistic Regression, Random Forest, SVM)
-- **Model Evaluation**: Comprehensive evaluation with multiple metrics (accuracy, precision, recall, F1-score)
-- **MLflow Tracking**: Complete experiment tracking with parameters, metrics, and artifacts
-- **Model Registration**: Best model registration in MLflow Model Registry
-- **Visualization**: Confusion matrices, feature importance plots, and model comparison charts
-
-## 📁 Project Structure
-
-```
-mlops-assignment-1/
-├── data/                          # Dataset storage
-├── notebooks/                     # Jupyter notebooks
-│   └── mlops_training_demo.ipynb  # Interactive demo notebook
-├── src/                           # Source code
-│   ├── data_loader.py            # Data loading utilities
-│   ├── models.py                 # Model training and evaluation
-│   ├── mlflow_utils.py           # MLflow tracking utilities
-│   ├── model_registry.py         # Model monitoring and registration
-│   └── train_pipeline.py         # Complete training pipeline
-├── models/                        # Trained model storage
-│   ├── logistic_regression_best.pkl
-│   ├── random_forest_best.pkl
-│   └── svm_best.pkl
-├── results/                       # Experiment results
-├── mlruns/                        # MLflow tracking data
-├── requirements.txt               # Python dependencies
-├── run_pipeline.py               # Quick start script
-└── README.md                     # Project documentation
-```
-
-## 🚀 Quick Start
-
-### 1. Install Dependencies
-
-```bash
-# Install required packages (assuming global environment)
-pip install -r requirements.txt
-```
-
-### 2. Run the Complete Pipeline
-
-```bash
-# Execute the full MLOps pipeline
-python3 run_pipeline.py
-```
-
-### 3. View MLflow UI
-
-```bash
-# Start MLflow UI
-mlflow ui --backend-store-uri file:./mlruns
-
-# Open in browser: http://localhost:5000
-```
-
-### 4. Model Registration and Monitoring
-
-```bash
-# Run model monitoring and registration
-python3 src/model_registry.py
-```
-
-## 📊 Models Implemented
-
-### 1. Logistic Regression ⭐ (Best Model)
-- **Hyperparameters**: C=10.0, solver=lbfgs, penalty=l2
-- **Cross-validation Score**: 96.67%
-- **Test Performance**: 100% accuracy, precision, recall, F1-score
-- **Status**: Registered in MLflow Model Registry
-
-### 2. Random Forest
-- **Hyperparameters**: n_estimators=50, max_depth=3, min_samples_split=2, min_samples_leaf=1
-- **Cross-validation Score**: 95.83%
-- **Test Performance**: 96.67% accuracy
-- **Status**: Registered in MLflow Model Registry
-
-### 3. Support Vector Machine (SVM)
-- **Hyperparameters**: C=1.0, kernel=rbf, gamma=0.1
-- **Cross-validation Score**: 98.33%
-- **Test Performance**: 96.67% accuracy
-- **Status**: Registered in MLflow Model Registry
-
-## 📈 Evaluation Metrics
-
-Each model is evaluated using:
-- **Accuracy**: Overall classification accuracy
-- **Precision**: Weighted average precision across classes
-- **Recall**: Weighted average recall across classes
-- **F1-Score**: Weighted average F1-score across classes
-- **Confusion Matrix**: Detailed classification matrix
-- **Classification Report**: Per-class performance metrics
-
-## 🔬 MLflow Experiment Tracking
-
-### What's Tracked:
-- **Parameters**: All hyperparameters for each model
-- **Metrics**: Cross-validation scores and test performance
-- **Artifacts**: 
-  - Confusion matrices (PNG)
-  - Feature importance plots (PNG)
-  - Classification reports (JSON)
-  - Model comparison charts (PNG)
-- **Models**: Serialized trained models for deployment
-
-### Experiments Structure:
-- **Training Runs**: One run per model training with hyperparameter tuning
-- **Evaluation Runs**: One run per model evaluation on test set
-- **Comparison Run**: Overall model comparison with visualizations
-
-## 📋 Results Summary
-
-| Model | CV Score | Test Accuracy | Test Precision | Test Recall | Test F1-Score |
-|-------|----------|---------------|----------------|-------------|---------------|
-| **Logistic Regression** ⭐ | 0.9667 | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
-| Random Forest | 0.9583 | 0.9667 | 0.9697 | 0.9667 | 0.9666 |
-| SVM | 0.9833 | 0.9667 | 0.9697 | 0.9667 | 0.9666 |
-
-**Best Model**: Logistic Regression (100% test accuracy) - **Registered as Production Model**
-
-## 📸 MLflow UI Screenshots
-
-### Experiment Tracking Dashboard
-![MLflow Experiment Tracking](1.png)
-*MLflow experiment tracking interface showing all model runs with parameters, metrics, and artifacts*
-
-### Model Registry Interface
-![MLflow Model Registry](2.png)
-*MLflow Model Registry showing registered models with versions and stages*
-
-## 🏭 Model Registry & Monitoring
-
-### Model Registration Process:
-1. **Automatic Selection**: Best model identified based on test accuracy
-2. **Registry Storage**: Model registered in MLflow Model Registry
-3. **Version Management**: Versioned model with metadata tags
-4. **Stage Management**: Production-ready model marked appropriately
-
-### Registered Models:
-- `iris-best-classifier`: Production model (Logistic Regression)
-- `logistic-regression-model`: Individual model registry
-- `random-forest-model`: Individual model registry  
-- `svm-model`: Individual model registry
-
-### Monitoring Capabilities:
-- **Run Tracking**: Monitor all experiment runs and their status
-- **Performance Metrics**: Track model performance across experiments
-- **Model Lineage**: Trace model versions and their source runs
-- **Artifact Management**: Organized storage of plots and reports
-
-## 💡 Key Features
-
-### 1. Automated Pipeline
-- Complete end-to-end automation from data loading to model evaluation
-- Reproducible results with fixed random seeds
-- Error handling and logging throughout the pipeline
-
-### 2. Comprehensive Evaluation
-- Multiple metrics for thorough model assessment
-- Stratified cross-validation for reliable performance estimation
-- Visualization of results with confusion matrices and comparison charts
-
-### 3. MLflow Integration
-- Complete experiment tracking and reproducibility
-- Model versioning and registry
-- Artifact management for plots and reports
-- Easy comparison of multiple runs
-
-### 4. Production-Ready Code
-- Modular design with separate utilities
-- Comprehensive logging and error handling
-- Clean code structure following best practices
-- Type hints and documentation
-
-## 📚 Usage Examples
-
-### Running Individual Components
-
-```python
-# Load data
-from src.data_loader import DataLoader
-loader = DataLoader()
-X_train, X_test, y_train, y_test, metadata = loader.get_data()
-
-# Train a single model
-from src.models import ModelTrainer
-trainer = ModelTrainer()
-model, info = trainer.train_model('logistic_regression', X_train, y_train)
-
-# Evaluate model
-from src.models import ModelEvaluator
-evaluator = ModelEvaluator()
-results = evaluator.evaluate_model(model, X_test, y_test, 'logistic_regression')
-
-# Monitor experiments
-from src.model_registry import MLflowMonitor
-monitor = MLflowMonitor()
-summary = monitor.get_experiment_summary()
-```
-
-### Using the Jupyter Notebook
-
-Open `notebooks/mlops_training_demo.ipynb` for an interactive demonstration of the complete workflow with detailed explanations and visualizations.
-
-## 🎯 Assignment Requirements ✅
-
-### Part 2 – Model Training & Comparison (25 marks)
-- ✅ **Dataset Selection**: Used Iris dataset for multi-class classification
-- ✅ **Multiple Models**: Implemented 3 ML models (Logistic Regression, Random Forest, SVM)
-- ✅ **Model Comparison**: Comprehensive comparison on accuracy and additional metrics
-- ✅ **Model Storage**: All trained models saved in `/models` folder
-
-### Part 3 – MLflow Tracking & Logging (30 marks)
-- ✅ **MLflow Setup**: Complete MLflow configuration and experiment setup
-- ✅ **Parameter Logging**: All hyperparameters logged for each model
-- ✅ **Metrics Logging**: Accuracy, precision, recall, F1-score logged
-- ✅ **Artifact Logging**: Confusion matrices, classification reports, and comparison plots
-- ✅ **MLflow UI**: Full functionality for comparing runs and visualizing metrics
-
-### Part 4 – Monitoring & Model Registration (15 marks)
-- ✅ **MLflow Monitoring**: Implemented comprehensive monitoring of metrics and runs
-- ✅ **Best Model Selection**: Automatic selection of best performing model (Logistic Regression)
-- ✅ **Model Registration**: Best model registered in MLflow Model Registry with version control
-- ✅ **Documentation**: Complete documentation of model registration process
-
-### Part 5 – Documentation & GitHub Submission (10 marks)
-- ✅ **Problem Statement**: Clear dataset description and problem definition
-- ✅ **Model Selection**: Detailed model comparison and selection rationale
-- ✅ **MLflow Screenshots**: Instructions for viewing MLflow UI with experiment details
-- ✅ **Model Registration**: Documented registration process and screenshots
-- ✅ **Run Instructions**: Comprehensive setup and execution instructions
-- ✅ **GitHub Repository**: Complete codebase with documentation
-
-## 📸 MLflow UI Screenshots Guide
-
-### Viewing Experiment Results:
-1. **Start MLflow UI**: Run `mlflow ui --backend-store-uri file:./mlruns`
-2. **Navigate to Experiment**: Select "Iris-Classification-Comparison" experiment
-3. **Compare Runs**: View all training and evaluation runs with metrics
-4. **View Artifacts**: Click on runs to see confusion matrices and plots
-
-### Model Registry:
-1. **Access Registry**: Click "Models" tab in MLflow UI
-2. **View Registered Models**: See all registered models and versions
-3. **Production Model**: Check `iris-best-classifier` marked as best model
-4. **Model Details**: View model metadata, tags, and version history
-
-## 🛠️ Technical Details
-
-### Dependencies
-- **scikit-learn**: Machine learning models and evaluation
-- **MLflow**: Experiment tracking and model management
-- **pandas/numpy**: Data manipulation and numerical computing
-- **matplotlib/seaborn**: Visualization and plotting
-- **joblib**: Model serialization
-
-### Environment
-- **Python**: 3.7+
-- **Platform**: Cross-platform (Linux, Windows, macOS)
-- **Package Management**: pip (global environment as specified)
-
-## 🎯 Problem Statement & Dataset
-
-### Dataset: Iris Flower Classification
-- **Source**: UCI Machine Learning Repository (built into scikit-learn)
-- **Samples**: 150 flower samples (50 per class)
-- **Features**: 4 numerical features (sepal length/width, petal length/width)
-- **Classes**: 3 species (Setosa, Versicolor, Virginica)
-- **Challenge**: Multi-class classification with overlapping features
-
-### Problem Objective:
-Classify iris flowers into one of three species based on physical measurements, implementing a complete MLOps workflow with experiment tracking and model management.
-
-## 🚀 Next Steps
-
-1. **Advanced Hyperparameter Optimization**: Implement Bayesian optimization
-2. **Model Deployment**: Create REST API for model serving
-3. **Monitoring Dashboard**: Real-time model performance monitoring
-4. **A/B Testing**: Framework for comparing model versions in production
-5. **Data Drift Detection**: Monitor incoming data for distribution changes
-
-## 📞 Support
-
-For questions or issues:
-1. Check the Jupyter notebook for detailed explanations
-2. Review MLflow UI for experiment details at http://localhost:5000
-3. Examine logs in the terminal output
-4. Verify all dependencies are installed correctly
-
----
-
-**Author**: MLOps Assignment 1  
-**Date**: September 2025  
-**Purpose**: Demonstrating complete MLOps workflow with model training, MLflow tracking, and model registry management Assignment 1: Model Training & Comparison with MLflow Tracking
-
 A comprehensive MLOps project demonstrating machine learning model training, evaluation, comparison, and experiment tracking using MLflow with model registry integration.
 
 ## 🎯 Problem Statement
 
-This project addresses the challenge of building a robust machine learning pipeline that can:
+This project addresses the challenge of building a robust machine learning pipeline for **Iris flower classification** that can:
 - Train and compare multiple ML models efficiently
-- Track experiments and maintain reproducibility
+- Track experiments and maintain reproducibility  
 - Register and manage model versions
 - Provide comprehensive evaluation and monitoring
 
-**Dataset**: We use the classic **Iris flower classification dataset** which contains 150 samples of iris flowers with 4 features (sepal length, sepal width, petal length, petal width) across 3 species (setosa, versicolor, virginica).
+**Dataset**: Classic Iris dataset with 150 samples, 4 features (sepal/petal length/width), and 3 species (setosa, versicolor, virginica).
 
-**Objective**: Build a multi-class classification system that can accurately predict iris species based on flower measurements.
+**Objective**: Build a multi-class classification system with complete MLOps workflow and MLflow tracking.
 
 ## 📁 Project Structure
 
@@ -335,7 +35,6 @@ mlops-assignment-1/
 ├── mlruns/                        # MLflow tracking data
 ├── requirements.txt               # Python dependencies
 ├── run_pipeline.py               # Quick start script
-├── register_model.py             # Model registration script
 └── README.md                     # Project documentation
 ```
 
@@ -359,7 +58,7 @@ python3 run_pipeline.py
 ### 4. Register Best Model
 ```bash
 # Register the best performing model
-python3 register_model.py
+python3 src/model_registry.py
 ```
 
 ### 5. View MLflow UI
@@ -380,16 +79,6 @@ mlflow ui --backend-store-uri file:./mlruns
 | **Random Forest** | n_estimators, max_depth, min_samples_split, min_samples_leaf | 5-fold stratified | Handles non-linearity, feature importance |
 | **Support Vector Machine** | C, kernel, gamma | 5-fold stratified | Effective in high dimensions, robust |
 
-### Evaluation Metrics
-
-Each model is comprehensively evaluated using:
-- **Accuracy**: Overall classification accuracy
-- **Precision**: Weighted average precision across classes
-- **Recall**: Weighted average recall across classes  
-- **F1-Score**: Weighted average F1-score across classes
-- **Confusion Matrix**: Detailed per-class performance
-- **Cross-validation Score**: 5-fold stratified CV for reliability
-
 ### Performance Results
 
 | Model | CV Score | Test Accuracy | Test Precision | Test Recall | Test F1-Score |
@@ -398,7 +87,17 @@ Each model is comprehensively evaluated using:
 | Random Forest | 0.9583 | 0.9667 | 0.9697 | 0.9667 | 0.9666 |
 | SVM | 0.9833 | 0.9667 | 0.9697 | 0.9667 | 0.9666 |
 
-**🏆 Best Model**: Logistic Regression achieved perfect 100% accuracy on the test set.
+**🏆 Best Model**: Logistic Regression achieved perfect 100% accuracy on the test set and is registered as the production model.
+
+## 📸 MLflow UI Screenshots
+
+### Experiment Tracking Dashboard
+![MLflow Experiment Tracking](1.png)
+*MLflow experiment tracking interface showing all model runs with parameters, metrics, and artifacts*
+
+### Model Registry Interface
+![MLflow Model Registry](2.png)
+*MLflow Model Registry showing registered models with versions and stages*
 
 ## 🔬 MLflow Experiment Tracking
 
@@ -437,9 +136,9 @@ Iris-Classification-Comparison/
 └── models_comparison/                # Overall comparison
 ```
 
-## 🔧 Part 4: Monitoring & Model Registration
+## 🏭 Model Registry & Monitoring
 
-### MLflow Model Registry Implementation ✅
+### Part 4 Implementation ✅
 
 #### 1. **Monitoring Capabilities**
 - **Experiment Monitoring**: Track all runs and their status
@@ -457,9 +156,6 @@ model_version = mlflow.register_model(
     model_uri=f"runs:/{best_run.info.run_id}/model",
     name="iris-best-classifier"
 )
-
-# Stage promotion
-monitor.promote_model_to_production(model_name, version)
 ```
 
 #### 3. **Model Registry Features**
@@ -468,58 +164,11 @@ monitor.promote_model_to_production(model_name, version)
 - ✅ **Metadata Tracking**: Tags for model lineage
 - ✅ **Model Lineage**: Full traceability to training runs
 
-#### 4. **Registered Model Details**
-```
-Model Name: iris-best-classifier
-Version: 1
-Stage: Production
-Model Type: Logistic Regression
-Best Accuracy: 100.0%
-Registration Date: 2025-09-14
-Tags: {
-  "best_metric": "test_accuracy",
-  "best_score": "1.0000",
-  "model_type": "logistic_regression",
-  "registration_date": "2025-09-14T..."
-}
-```
-
-## 📸 MLflow UI Screenshots Guide
-
-### Accessing MLflow UI
-1. **Start MLflow UI**:
-   ```bash
-   mlflow ui --backend-store-uri file:./mlruns
-   ```
-2. **Open Browser**: http://localhost:5000
-
-### Key Views to Screenshot
-
-#### 1. **Experiments Overview**
-- Navigate to "Experiments" tab
-- Shows: Iris-Classification-Comparison experiment
-- Screenshot shows: All runs with their metrics
-
-#### 2. **Run Comparison**
-- Select multiple runs (Ctrl+click)
-- Click "Compare" button
-- Screenshot shows: Side-by-side metric comparison
-
-#### 3. **Individual Run Details**
-- Click on any run (e.g., logistic_regression_training)
-- Screenshot shows: Parameters, metrics, and artifacts
-
-#### 4. **Artifacts View**
-- Within a run, click "Artifacts" tab
-- Screenshot shows: Confusion matrices, plots, models
-
-#### 5. **Model Registry**
-- Click "Models" tab in top navigation
-- Screenshot shows: Registered models list
-
-#### 6. **Model Version Details**
-- Click on "iris-best-classifier"
-- Screenshot shows: Model versions, stages, and metadata
+#### 4. **Registered Models**
+- `iris-best-classifier`: Production model (Logistic Regression)
+- `logistic-regression-model`: Individual model registry
+- `random-forest-model`: Individual model registry  
+- `svm-model`: Individual model registry
 
 ## 📋 Complete Running Instructions
 
@@ -550,13 +199,12 @@ python3 run_pipeline.py
 #### 3. **Register Best Model**
 ```bash
 # Register the best performing model
-python3 register_model.py
+python3 src/model_registry.py
 ```
 **Expected Output**:
 - Experiment monitoring summary
 - Best model identification
 - Model registration in MLflow registry
-- Production stage promotion
 
 #### 4. **Interactive Analysis**
 ```bash
@@ -579,24 +227,33 @@ mlflow ui --backend-store-uri file:./mlruns
 - Model comparisons and artifacts
 - Registered models and versions
 
-### Alternative: Individual Components
+## 📸 MLflow UI Screenshots Guide
 
-```bash
-# Run specific components
-cd src
+### Accessing MLflow UI
+1. **Start MLflow UI**: `mlflow ui --backend-store-uri file:./mlruns`
+2. **Open Browser**: http://localhost:5000
 
-# Data loading only
-python3 data_loader.py
+### Key Views to Screenshot
 
-# Model training only
-python3 models.py
+#### 1. **Experiments Overview**
+- Navigate to "Experiments" tab
+- Shows: Iris-Classification-Comparison experiment
+- Screenshot shows: All runs with their metrics
 
-# Model registry only
-python3 model_registry.py
-```
+#### 2. **Run Comparison**
+- Select multiple runs (Ctrl+click)
+- Click "Compare" button
+- Screenshot shows: Side-by-side metric comparison
+
+#### 3. **Model Registry**
+- Click "Models" tab in top navigation
+- Screenshot shows: Registered models list
+- Click on "iris-best-classifier" for details
 
 ## 🎯 Assignment Requirements Checklist
-
+### ✅ Part 1 – GitHub Setup
+- Create a new GitHub repository named mlops-assignment-1.
+-  Clone the repository to your local machine.
 ### ✅ Part 2 – Model Training & Comparison (25 marks)
 - [x] **Dataset Selection**: Iris dataset for multi-class classification
 - [x] **Multiple Models**: 3 ML models (Logistic Regression, Random Forest, SVM)
@@ -647,6 +304,46 @@ python3 model_registry.py
 - Complete artifact management
 - Model lineage and provenance tracking
 
+## 📚 Usage Examples
+
+### Running Individual Components
+
+```python
+# Load data
+from src.data_loader import DataLoader
+loader = DataLoader()
+X_train, X_test, y_train, y_test, metadata = loader.get_data()
+
+# Train a single model
+from src.models import ModelTrainer
+trainer = ModelTrainer()
+model, info = trainer.train_model('logistic_regression', X_train, y_train)
+
+# Evaluate model
+from src.models import ModelEvaluator
+evaluator = ModelEvaluator()
+results = evaluator.evaluate_model(model, X_test, y_test, 'logistic_regression')
+
+# Monitor experiments
+from src.model_registry import MLflowMonitor
+monitor = MLflowMonitor()
+summary = monitor.get_experiment_summary()
+```
+
+## 🛠️ Technical Details
+
+### Dependencies
+- **scikit-learn**: Machine learning models and evaluation
+- **MLflow**: Experiment tracking and model management
+- **pandas/numpy**: Data manipulation and numerical computing
+- **matplotlib/seaborn**: Visualization and plotting
+- **joblib**: Model serialization
+
+### Environment
+- **Python**: 3.7+
+- **Platform**: Cross-platform (Linux, Windows, macOS)
+- **Package Management**: pip (global environment as specified)
+
 ## 🔧 Technical Architecture
 
 ### Data Flow
@@ -695,224 +392,19 @@ Production Deployment
 3. Examine terminal logs for error messages
 4. Ensure all dependencies are correctly installed
 
+## 🚀 Next Steps
+
+1. **Advanced Hyperparameter Optimization**: Implement Bayesian optimization
+2. **Model Deployment**: Create REST API for model serving
+3. **Monitoring Dashboard**: Real-time model performance monitoring
+4. **A/B Testing**: Framework for comparing model versions in production
+5. **Data Drift Detection**: Monitor incoming data for distribution changes
+
 ---
 
 **Project**: MLOps Assignment 1  
-**Author**: [Your Name]  
+**Author**: M Talha Ramzan  
 **Date**: September 2025  
 **Repository**: https://github.com/c2-tlhah/mlops-assignment-1  
 **MLflow Tracking**: Complete experiment tracking with model registry  
-**Status**: ✅ All assignment requirements implemented and documented: Model Training & Comparison with MLflow Tracking
-
-A comprehensive MLOps project demonstrating machine learning model training, evaluation, comparison, and experiment tracking using MLflow.
-
-## 🎯 Project Overview
-
-This project implements a complete MLOps workflow that includes:
-- **Data Loading & Preprocessing**: Automated dataset loading with the Iris classification dataset
-- **Model Training**: Training multiple ML models (Logistic Regression, Random Forest, SVM)
-- **Model Evaluation**: Comprehensive evaluation with multiple metrics (accuracy, precision, recall, F1-score)
-- **MLflow Tracking**: Complete experiment tracking with parameters, metrics, and artifacts
-- **Visualization**: Confusion matrices, feature importance plots, and model comparison charts
-
-## 📁 Project Structure
-
-```
-mlops-assignment-1/
-├── data/                          # Dataset storage
-├── notebooks/                     # Jupyter notebooks
-│   └── mlops_training_demo.ipynb  # Interactive demo notebook
-├── src/                           # Source code
-│   ├── data_loader.py            # Data loading utilities
-│   ├── models.py                 # Model training and evaluation
-│   ├── mlflow_utils.py           # MLflow tracking utilities
-│   └── train_pipeline.py         # Complete training pipeline
-├── models/                        # Trained model storage
-│   ├── logistic_regression_best.pkl
-│   ├── random_forest_best.pkl
-│   └── svm_best.pkl
-├── results/                       # Experiment results
-├── mlruns/                        # MLflow tracking data
-├── requirements.txt               # Python dependencies
-├── run_pipeline.py               # Quick start script
-└── README.md                     # Project documentation
-```
-
-## 🚀 Quick Start
-
-### 1. Install Dependencies
-
-```bash
-# Install required packages (assuming global environment)
-pip install -r requirements.txt
-```
-
-### 2. Run the Complete Pipeline
-
-```bash
-# Execute the full MLOps pipeline
-python3 run_pipeline.py
-```
-
-### 3. View MLflow UI
-
-```bash
-# Start MLflow UI
-mlflow ui --backend-store-uri file:./mlruns
-
-# Open in browser: http://localhost:5000
-```
-
-## 📊 Models Implemented
-
-### 1. Logistic Regression
-- **Hyperparameters**: C, solver, penalty
-- **Cross-validation**: 5-fold stratified
-- **Best Performance**: 100% accuracy on test set
-
-### 2. Random Forest
-- **Hyperparameters**: n_estimators, max_depth, min_samples_split, min_samples_leaf
-- **Cross-validation**: 5-fold stratified
-- **Best Performance**: 96.67% accuracy on test set
-
-### 3. Support Vector Machine (SVM)
-- **Hyperparameters**: C, kernel, gamma
-- **Cross-validation**: 5-fold stratified
-- **Best Performance**: 96.67% accuracy on test set
-
-## 📈 Evaluation Metrics
-
-Each model is evaluated using:
-- **Accuracy**: Overall classification accuracy
-- **Precision**: Weighted average precision across classes
-- **Recall**: Weighted average recall across classes
-- **F1-Score**: Weighted average F1-score across classes
-- **Confusion Matrix**: Detailed classification matrix
-- **Classification Report**: Per-class performance metrics
-
-## 🔬 MLflow Experiment Tracking
-
-### What's Tracked:
-- **Parameters**: All hyperparameters for each model
-- **Metrics**: Cross-validation scores and test performance
-- **Artifacts**: 
-  - Confusion matrices (PNG)
-  - Feature importance plots (PNG)
-  - Classification reports (JSON)
-  - Model comparison charts (PNG)
-- **Models**: Serialized trained models for deployment
-
-### Experiments Structure:
-- **Training Runs**: One run per model training with hyperparameter tuning
-- **Evaluation Runs**: One run per model evaluation on test set
-- **Comparison Run**: Overall model comparison with visualizations
-
-## 📋 Results Summary
-
-| Model | CV Score | Test Accuracy | Test Precision | Test Recall | Test F1-Score |
-|-------|----------|---------------|----------------|-------------|---------------|
-| Logistic Regression | 0.9667 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
-| Random Forest | 0.9583 | 0.9667 | 0.9697 | 0.9667 | 0.9666 |
-| SVM | 0.9833 | 0.9667 | 0.9697 | 0.9667 | 0.9666 |
-
-**Best Model**: Logistic Regression (100% test accuracy)
-
-## 💡 Key Features
-
-### 1. Automated Pipeline
-- Complete end-to-end automation from data loading to model evaluation
-- Reproducible results with fixed random seeds
-- Error handling and logging throughout the pipeline
-
-### 2. Comprehensive Evaluation
-- Multiple metrics for thorough model assessment
-- Stratified cross-validation for reliable performance estimation
-- Visualization of results with confusion matrices and comparison charts
-
-### 3. MLflow Integration
-- Complete experiment tracking and reproducibility
-- Model versioning and registry
-- Artifact management for plots and reports
-- Easy comparison of multiple runs
-
-### 4. Production-Ready Code
-- Modular design with separate utilities
-- Comprehensive logging and error handling
-- Clean code structure following best practices
-- Type hints and documentation
-
-## 📚 Usage Examples
-
-### Running Individual Components
-
-```python
-# Load data
-from src.data_loader import DataLoader
-loader = DataLoader()
-X_train, X_test, y_train, y_test, metadata = loader.get_data()
-
-# Train a single model
-from src.models import ModelTrainer
-trainer = ModelTrainer()
-model, info = trainer.train_model('logistic_regression', X_train, y_train)
-
-# Evaluate model
-from src.models import ModelEvaluator
-evaluator = ModelEvaluator()
-results = evaluator.evaluate_model(model, X_test, y_test, 'logistic_regression')
-```
-
-### Using the Jupyter Notebook
-
-Open `notebooks/mlops_training_demo.ipynb` for an interactive demonstration of the complete workflow with detailed explanations and visualizations.
-
-## 🎯 Assignment Requirements ✅
-
-### Part 2 – Model Training & Comparison (25 marks)
-- ✅ **Dataset Selection**: Used Iris dataset for multi-class classification
-- ✅ **Multiple Models**: Implemented 3 ML models (Logistic Regression, Random Forest, SVM)
-- ✅ **Model Comparison**: Comprehensive comparison on accuracy and additional metrics
-- ✅ **Model Storage**: All trained models saved in `/models` folder
-
-### Part 3 – MLflow Tracking & Logging (30 marks)
-- ✅ **MLflow Setup**: Complete MLflow configuration and experiment setup
-- ✅ **Parameter Logging**: All hyperparameters logged for each model
-- ✅ **Metrics Logging**: Accuracy, precision, recall, F1-score logged
-- ✅ **Artifact Logging**: Confusion matrices, classification reports, and comparison plots
-- ✅ **MLflow UI**: Full functionality for comparing runs and visualizing metrics
-
-## 🛠️ Technical Details
-
-### Dependencies
-- **scikit-learn**: Machine learning models and evaluation
-- **MLflow**: Experiment tracking and model management
-- **pandas/numpy**: Data manipulation and numerical computing
-- **matplotlib/seaborn**: Visualization and plotting
-- **joblib**: Model serialization
-
-### Environment
-- **Python**: 3.7+
-- **Platform**: Cross-platform (Linux, Windows, macOS)
-- **Package Management**: pip (global environment as specified)
-
-## 🚀 Next Steps
-
-1. **Hyperparameter Optimization**: Implement Bayesian optimization for better hyperparameter search
-2. **Advanced Evaluation**: Add ROC curves, precision-recall curves, and learning curves
-3. **Model Deployment**: Create REST API for model serving
-4. **Monitoring**: Add data drift detection and model performance monitoring
-5. **CI/CD**: Implement automated testing and deployment pipeline
-
-## 📞 Support
-
-For questions or issues:
-1. Check the Jupyter notebook for detailed explanations
-2. Review MLflow UI for experiment details
-3. Examine logs in the terminal output
-4. Verify all dependencies are installed correctly
-
----
-
-**Author**: MLOps Assignment 1  
-**Date**: September 2025  
-**Purpose**: Demonstrating complete MLOps workflow with model training and MLflow tracking
+**Status**: ✅ All assignment requirements implemented and documented
