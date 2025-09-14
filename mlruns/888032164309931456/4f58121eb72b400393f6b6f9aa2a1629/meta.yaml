@@ -1,0 +1,14 @@
+artifact_uri: file:///home/tlha/Desktop/mlops-assignment-1/mlruns/888032164309931456/4f58121eb72b400393f6b6f9aa2a1629/artifacts
+end_time: 1757870791878
+entry_point_name: ''
+experiment_id: '888032164309931456'
+lifecycle_stage: active
+run_id: 4f58121eb72b400393f6b6f9aa2a1629
+run_name: svm_evaluation
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757870791452
+status: 3
+tags: []
+user_id: tlha

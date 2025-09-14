@@ -125,6 +125,16 @@ Each model is evaluated using:
 
 **Best Model**: Logistic Regression (100% test accuracy) - **Registered as Production Model**
 
+## 📸 MLflow UI Screenshots
+
+### Experiment Tracking Dashboard
+![MLflow Experiment Tracking](1.png)
+*MLflow experiment tracking interface showing all model runs with parameters, metrics, and artifacts*
+
+### Model Registry Interface
+![MLflow Model Registry](2.png)
+*MLflow Model Registry showing registered models with versions and stages*
+
 ## 🏭 Model Registry & Monitoring
 
 ### Model Registration Process:
