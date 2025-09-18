@@ -43,7 +43,7 @@ class MLflowTracker:
             print(f"Logged {model_name} training to MLflow")
     
     def log_model_evaluation(self, model, model_name, metrics, y_true, y_pred):
-        """Log model evaluation results to MLflow."""
+        """Log model evaluation results to MLflow and save to results folder."""
         with mlflow.start_run(run_name=f"{model_name}_evaluation"):
             # Log evaluation metrics
             mlflow.log_metric("test_accuracy", metrics['accuracy'])
@@ -51,13 +51,33 @@ class MLflowTracker:
             mlflow.log_metric("test_recall", metrics['recall'])
             mlflow.log_metric("test_f1_score", metrics['f1_score'])
             
+            # Save metrics to results folder
+            self.save_metrics_to_results(model_name, metrics)
+            
             # Create and log confusion matrix
             self.log_confusion_matrix(y_true, y_pred, model_name)
             
             print(f"Logged {model_name} evaluation to MLflow")
     
+    def save_metrics_to_results(self, model_name, metrics):
+        """Save evaluation metrics to results folder."""
+        import os
+        import json
+        
+        # Create results directory if it doesn't exist
+        os.makedirs('results', exist_ok=True)
+        
+        # Save metrics as JSON
+        results_file = f"results/{model_name}_metrics.json"
+        with open(results_file, 'w') as f:
+            json.dump(metrics, f, indent=2)
+        
+        print(f"Saved metrics to: {results_file}")
+    
     def log_confusion_matrix(self, y_true, y_pred, model_name):
         """Create and log confusion matrix plot."""
+        import os
+        
         # Create confusion matrix
         cm = confusion_matrix(y_true, y_pred)
         
@@ -82,19 +102,29 @@ class MLflowTracker:
         plt.xlabel('Predicted Label')
         plt.tight_layout()
         
-        # Save and log to MLflow
-        filename = f"confusion_matrix_{model_name}.png"
-        plt.savefig(filename)
-        mlflow.log_artifact(filename)
+        # Create results directory if it doesn't exist
+        os.makedirs('results', exist_ok=True)
+        
+        # Save to results folder AND log to MLflow
+        results_filename = f"results/confusion_matrix_{model_name}.png"
+        mlflow_filename = f"confusion_matrix_{model_name}.png"
+        
+        # Save to results folder
+        plt.savefig(results_filename)
+        print(f"Saved confusion matrix to: {results_filename}")
+        
+        # Save temporary file for MLflow
+        plt.savefig(mlflow_filename)
+        mlflow.log_artifact(mlflow_filename)
+        
         plt.close()
         
-        # Clean up file
-        import os
-        if os.path.exists(filename):
-            os.remove(filename)
+        # Clean up temporary MLflow file (keep the results folder file)
+        if os.path.exists(mlflow_filename):
+            os.remove(mlflow_filename)
     
     def log_model_comparison(self, evaluation_results):
-        """Log overall model comparison."""
+        """Log overall model comparison and save to results folder."""
         with mlflow.start_run(run_name="models_comparison"):
             # Log best model metrics
             best_accuracy = 0
@@ -108,13 +138,43 @@ class MLflowTracker:
             mlflow.log_metric("best_accuracy", best_accuracy)
             mlflow.set_tag("best_model", best_model)
             
+            # Save comparison summary to results folder
+            self.save_comparison_to_results(evaluation_results, best_model, best_accuracy)
+            
             # Create comparison plot
             self.create_comparison_plot(evaluation_results)
             
             print("Logged model comparison to MLflow")
     
+    def save_comparison_to_results(self, evaluation_results, best_model, best_accuracy):
+        """Save model comparison summary to results folder."""
+        import os
+        import json
+        
+        # Create results directory if it doesn't exist
+        os.makedirs('results', exist_ok=True)
+        
+        # Create summary
+        summary = {
+            "best_model": best_model,
+            "best_accuracy": best_accuracy,
+            "all_results": evaluation_results,
+            "model_ranking": sorted(evaluation_results.items(), 
+                                  key=lambda x: x[1]['accuracy'], 
+                                  reverse=True)
+        }
+        
+        # Save summary as JSON
+        summary_file = "results/model_comparison_summary.json"
+        with open(summary_file, 'w') as f:
+            json.dump(summary, f, indent=2)
+        
+        print(f"Saved comparison summary to: {summary_file}")
+    
     def create_comparison_plot(self, evaluation_results):
         """Create a comparison plot of all models."""
+        import os
+        
         models = list(evaluation_results.keys())
         accuracies = [evaluation_results[model]['accuracy'] for model in models]
         
@@ -131,16 +191,26 @@ class MLflowTracker:
         
         plt.tight_layout()
         
-        # Save and log to MLflow
-        filename = "models_comparison.png"
-        plt.savefig(filename)
-        mlflow.log_artifact(filename)
+        # Create results directory if it doesn't exist
+        os.makedirs('results', exist_ok=True)
+        
+        # Save to results folder AND log to MLflow
+        results_filename = "results/models_comparison.png"
+        mlflow_filename = "models_comparison.png"
+        
+        # Save to results folder
+        plt.savefig(results_filename)
+        print(f"Saved comparison plot to: {results_filename}")
+        
+        # Save temporary file for MLflow
+        plt.savefig(mlflow_filename)
+        mlflow.log_artifact(mlflow_filename)
+        
         plt.close()
         
-        # Clean up file
-        import os
-        if os.path.exists(filename):
-            os.remove(filename)
+        # Clean up temporary MLflow file
+        if os.path.exists(mlflow_filename):
+            os.remove(mlflow_filename)
 
 
 # Simple test

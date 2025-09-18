@@ -1,0 +1,10 @@
+artifact_location: file:///home/tlha/Desktop/mlops-assignment-1/mlruns/158380728917498223/models/m-91ef8a1d41094c5a88bac8673b74104b/artifacts
+creation_timestamp: 1758219125382
+experiment_id: '158380728917498223'
+last_updated_timestamp: 1758219129152
+model_id: m-91ef8a1d41094c5a88bac8673b74104b
+model_type: null
+name: model
+source_run_id: ecb402f7388c4e98bec31c741c339fe7
+status: 2
+status_message: null

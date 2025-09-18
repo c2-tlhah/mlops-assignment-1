@@ -1,0 +1,7 @@
+{
+  "model_name": "logistic_regression",
+  "accuracy": 0.9333333333333333,
+  "precision": 0.9333333333333333,
+  "recall": 0.9333333333333333,
+  "f1_score": 0.9333333333333333
+}
