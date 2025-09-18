@@ -1,6 +1,5 @@
 # MLOps Assignment 1: Model Training & Comparison with MLflow Tracking
 
-**Student Assignment - Machine Learning Operations (MLOps)**
 
 ## 📋 Assignment Overview
 
@@ -178,6 +177,13 @@ Registration Date: 2025-09-XX
 - [x] **GitHub Repository**: Complete codebase with proper organization
 
 **Total Score: 80/80 marks** 🎯
+
+# Screen Shots
+<img width="1915" height="965" alt="image" src="https://github.com/user-attachments/assets/45752139-dcd7-4b25-9820-599620d2dc6f" />
+<img width="1915" height="965" alt="image" src="https://github.com/user-attachments/assets/5e38e244-ee5a-456d-befc-c747de9bc339" />
+<img width="1915" height="965" alt="image" src="https://github.com/user-attachments/assets/c7e9145c-c2ed-46c0-b1f3-d05188e2fcfd" />
+<img width="1915" height="965" alt="image" src="https://github.com/user-attachments/assets/e006821f-50fe-4440-b29d-59e4d1afdfff" />
+
 
 ## 💻 Code Structure & Design
 
