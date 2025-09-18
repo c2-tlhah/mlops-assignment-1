@@ -1,6 +1,5 @@
 # MLOps Assignment 1: Model Training & Comparison with MLflow Tracking
 
-**Student Assignment - Machine Learning Operations (MLOps)**
 
 ## 📋 Assignment Overview
 
