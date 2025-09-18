@@ -1,0 +1,14 @@
+artifact_uri: file:///home/tlha/Desktop/mlops-assignment-1/mlruns/158380728917498223/53c300da68e2472eb45c5ff760488f17/artifacts
+end_time: 1758215394472
+entry_point_name: ''
+experiment_id: '158380728917498223'
+lifecycle_stage: active
+run_id: 53c300da68e2472eb45c5ff760488f17
+run_name: svm_training
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758215389955
+status: 3
+tags: []
+user_id: tlha

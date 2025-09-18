@@ -1,286 +1,149 @@
 """
-MLflow configuration and tracking utilities.
+Simple MLflow tracking for the assignment.
 """
 
 import mlflow
 import mlflow.sklearn
-import mlflow.tracking
-import os
-import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import confusion_matrix, classification_report
-import json
-from typing import Dict, Any, List
-import logging
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from sklearn.metrics import confusion_matrix
+import numpy as np
 
 
 class MLflowTracker:
-    """Class to handle MLflow experiment tracking and logging."""
+    """Simple class to track experiments with MLflow."""
     
-    def __init__(self, experiment_name: str = "MLOps-Assignment-1", tracking_uri: str = None):
-        """
-        Initialize MLflow tracker.
+    def __init__(self):
+        """Initialize MLflow tracking."""
+        self.experiment_name = "Iris-Classification-Comparison"
         
-        Args:
-            experiment_name: Name of the MLflow experiment
-            tracking_uri: URI for MLflow tracking server (None for local)
-        """
-        self.experiment_name = experiment_name
+        # Set up MLflow to save locally
+        mlflow.set_tracking_uri("file:./mlruns")
         
-        # Set tracking URI (default to local mlruns directory)
-        if tracking_uri:
-            mlflow.set_tracking_uri(tracking_uri)
-        else:
-            mlflow.set_tracking_uri("file:./mlruns")
+        # Create or get experiment
+        experiment = mlflow.get_experiment_by_name(self.experiment_name)
+        if experiment is None:
+            mlflow.create_experiment(self.experiment_name)
+            print(f"Created experiment: {self.experiment_name}")
         
-        # Set or create experiment
-        try:
-            experiment = mlflow.get_experiment_by_name(experiment_name)
-            if experiment is None:
-                experiment_id = mlflow.create_experiment(experiment_name)
-                logger.info(f"Created new experiment: {experiment_name} (ID: {experiment_id})")
-            else:
-                experiment_id = experiment.experiment_id
-                logger.info(f"Using existing experiment: {experiment_name} (ID: {experiment_id})")
-        except Exception as e:
-            logger.error(f"Error setting up experiment: {e}")
-            raise
-        
-        mlflow.set_experiment(experiment_name)
-        self.experiment_id = experiment_id
+        mlflow.set_experiment(self.experiment_name)
     
-    def start_run(self, run_name: str = None) -> mlflow.ActiveRun:
-        """
-        Start a new MLflow run.
-        
-        Args:
-            run_name: Name for the run
+    def log_model_training(self, model, model_name, cv_score, params):
+        """Log model training information to MLflow."""
+        with mlflow.start_run(run_name=f"{model_name}_training"):
+            # Log parameters
+            mlflow.log_params(params)
             
-        Returns:
-            Active MLflow run
-        """
-        return mlflow.start_run(run_name=run_name)
-    
-    def log_model_info(self, model: Any, model_name: str, model_params: Dict[str, Any]):
-        """
-        Log model information to MLflow.
-        
-        Args:
-            model: Trained model
-            model_name: Name of the model
-            model_params: Model hyperparameters
-        """
-        # Log model type and name
-        mlflow.set_tag("model_type", model_name)
-        mlflow.set_tag("model_class", model.__class__.__name__)
-        
-        # Log hyperparameters
-        for param_name, param_value in model_params.items():
-            # Convert numpy types to Python types for MLflow compatibility
-            if isinstance(param_value, np.integer):
-                param_value = int(param_value)
-            elif isinstance(param_value, np.floating):
-                param_value = float(param_value)
-            elif param_value is None:
-                param_value = "None"
+            # Log cross-validation score
+            mlflow.log_metric("cv_score", cv_score)
+            mlflow.log_metric("cv_folds", 5)
             
-            mlflow.log_param(param_name, param_value)
-        
-        # Log the model itself
-        mlflow.sklearn.log_model(
-            sk_model=model,
-            artifact_path="model",
-            registered_model_name=f"{model_name.replace('_', '-')}-model"
-        )
+            # Log the trained model
+            mlflow.sklearn.log_model(model, "model")
+            
+            print(f"Logged {model_name} training to MLflow")
     
-    def log_metrics(self, metrics: Dict[str, float]):
-        """
-        Log evaluation metrics to MLflow.
-        
-        Args:
-            metrics: Dictionary of metric names and values
-        """
-        for metric_name, metric_value in metrics.items():
-            mlflow.log_metric(metric_name, metric_value)
+    def log_model_evaluation(self, model, model_name, metrics, y_true, y_pred):
+        """Log model evaluation results to MLflow."""
+        with mlflow.start_run(run_name=f"{model_name}_evaluation"):
+            # Log evaluation metrics
+            mlflow.log_metric("test_accuracy", metrics['accuracy'])
+            mlflow.log_metric("test_precision", metrics['precision'])
+            mlflow.log_metric("test_recall", metrics['recall'])
+            mlflow.log_metric("test_f1_score", metrics['f1_score'])
+            
+            # Create and log confusion matrix
+            self.log_confusion_matrix(y_true, y_pred, model_name)
+            
+            print(f"Logged {model_name} evaluation to MLflow")
     
-    def log_confusion_matrix(self, y_true: np.ndarray, y_pred: np.ndarray, 
-                           class_names: List[str], model_name: str):
-        """
-        Create and log confusion matrix as artifact.
-        
-        Args:
-            y_true: True labels
-            y_pred: Predicted labels
-            class_names: Names of classes
-            model_name: Name of the model
-        """
+    def log_confusion_matrix(self, y_true, y_pred, model_name):
+        """Create and log confusion matrix plot."""
         # Create confusion matrix
         cm = confusion_matrix(y_true, y_pred)
         
-        # Create figure
-        plt.figure(figsize=(8, 6))
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
-                   xticklabels=class_names, yticklabels=class_names)
+        # Create plot
+        plt.figure(figsize=(6, 5))
+        plt.imshow(cm, interpolation='nearest', cmap='Blues')
         plt.title(f'Confusion Matrix - {model_name}')
-        plt.xlabel('Predicted')
-        plt.ylabel('Actual')
+        plt.colorbar()
         
-        # Save and log as artifact
-        confusion_matrix_path = f"confusion_matrix_{model_name}.png"
-        plt.savefig(confusion_matrix_path, dpi=300, bbox_inches='tight')
-        mlflow.log_artifact(confusion_matrix_path)
+        # Add labels
+        classes = ['Setosa', 'Versicolor', 'Virginica']
+        tick_marks = np.arange(len(classes))
+        plt.xticks(tick_marks, classes)
+        plt.yticks(tick_marks, classes)
+        
+        # Add text annotations
+        for i in range(len(classes)):
+            for j in range(len(classes)):
+                plt.text(j, i, cm[i, j], ha="center", va="center")
+        
+        plt.ylabel('True Label')
+        plt.xlabel('Predicted Label')
+        plt.tight_layout()
+        
+        # Save and log to MLflow
+        filename = f"confusion_matrix_{model_name}.png"
+        plt.savefig(filename)
+        mlflow.log_artifact(filename)
         plt.close()
         
-        # Clean up temporary file
-        if os.path.exists(confusion_matrix_path):
-            os.remove(confusion_matrix_path)
+        # Clean up file
+        import os
+        if os.path.exists(filename):
+            os.remove(filename)
     
-    def log_feature_importance(self, model: Any, feature_names: List[str], model_name: str):
-        """
-        Log feature importance plot if model supports it.
-        
-        Args:
-            model: Trained model
-            feature_names: Names of features
-            model_name: Name of the model
-        """
-        if hasattr(model, 'feature_importances_'):
-            # Create feature importance plot
-            importances = model.feature_importances_
-            indices = np.argsort(importances)[::-1]
+    def log_model_comparison(self, evaluation_results):
+        """Log overall model comparison."""
+        with mlflow.start_run(run_name="models_comparison"):
+            # Log best model metrics
+            best_accuracy = 0
+            best_model = None
             
-            plt.figure(figsize=(10, 6))
-            plt.bar(range(len(importances)), importances[indices])
-            plt.xticks(range(len(importances)), [feature_names[i] for i in indices], rotation=45)
-            plt.title(f'Feature Importance - {model_name}')
-            plt.tight_layout()
+            for model_name, results in evaluation_results.items():
+                if results['accuracy'] > best_accuracy:
+                    best_accuracy = results['accuracy']
+                    best_model = model_name
             
-            # Save and log as artifact
-            feature_importance_path = f"feature_importance_{model_name}.png"
-            plt.savefig(feature_importance_path, dpi=300, bbox_inches='tight')
-            mlflow.log_artifact(feature_importance_path)
-            plt.close()
+            mlflow.log_metric("best_accuracy", best_accuracy)
+            mlflow.set_tag("best_model", best_model)
             
-            # Clean up temporary file
-            if os.path.exists(feature_importance_path):
-                os.remove(feature_importance_path)
-    
-    def log_classification_report(self, y_true: np.ndarray, y_pred: np.ndarray, 
-                                class_names: List[str], model_name: str):
-        """
-        Log classification report as artifact.
-        
-        Args:
-            y_true: True labels
-            y_pred: Predicted labels
-            class_names: Names of classes
-            model_name: Name of the model
-        """
-        # Generate classification report
-        report = classification_report(y_true, y_pred, target_names=class_names, output_dict=True)
-        
-        # Save as JSON
-        report_path = f"classification_report_{model_name}.json"
-        with open(report_path, 'w') as f:
-            json.dump(report, f, indent=2)
-        
-        mlflow.log_artifact(report_path)
-        
-        # Clean up temporary file
-        if os.path.exists(report_path):
-            os.remove(report_path)
-    
-    def log_dataset_info(self, metadata: Dict[str, Any]):
-        """
-        Log dataset information.
-        
-        Args:
-            metadata: Dataset metadata
-        """
-        mlflow.set_tag("dataset_name", "iris")
-        mlflow.log_param("n_samples", metadata['n_samples'])
-        mlflow.log_param("n_features", metadata['n_features'])
-        mlflow.log_param("n_classes", metadata['n_classes'])
-        
-        # Log feature names
-        for i, feature_name in enumerate(metadata['feature_names']):
-            mlflow.set_tag(f"feature_{i}", feature_name)
-    
-    def end_run(self):
-        """End the current MLflow run."""
-        mlflow.end_run()
-    
-    @staticmethod
-    def create_comparison_plot(evaluation_results: Dict[str, Dict[str, Any]]):
-        """
-        Create a comparison plot of all models.
-        
-        Args:
-            evaluation_results: Dictionary mapping model names to evaluation results
-        """
-        metrics = ['accuracy', 'precision', 'recall', 'f1_score']
-        model_names = list(evaluation_results.keys())
-        
-        # Prepare data for plotting
-        metric_data = {metric: [] for metric in metrics}
-        
-        for model_name in model_names:
-            for metric in metrics:
-                metric_data[metric].append(evaluation_results[model_name][metric])
-        
-        # Create comparison plot
-        fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-        axes = axes.ravel()
-        
-        for i, metric in enumerate(metrics):
-            axes[i].bar(model_names, metric_data[metric])
-            axes[i].set_title(f'{metric.replace("_", " ").title()} Comparison')
-            axes[i].set_ylabel(metric.replace("_", " ").title())
-            axes[i].tick_params(axis='x', rotation=45)
+            # Create comparison plot
+            self.create_comparison_plot(evaluation_results)
             
-            # Add value labels on bars
-            for j, v in enumerate(metric_data[metric]):
-                axes[i].text(j, v + 0.01, f'{v:.3f}', ha='center', va='bottom')
+            print("Logged model comparison to MLflow")
+    
+    def create_comparison_plot(self, evaluation_results):
+        """Create a comparison plot of all models."""
+        models = list(evaluation_results.keys())
+        accuracies = [evaluation_results[model]['accuracy'] for model in models]
+        
+        plt.figure(figsize=(10, 6))
+        bars = plt.bar(models, accuracies, color=['skyblue', 'lightgreen', 'lightcoral'])
+        plt.title('Model Performance Comparison')
+        plt.ylabel('Accuracy')
+        plt.ylim(0, 1.1)
+        
+        # Add value labels on bars
+        for bar, accuracy in zip(bars, accuracies):
+            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+                    f'{accuracy:.3f}', ha='center', va='bottom')
         
         plt.tight_layout()
         
-        # Save and log as artifact
-        comparison_path = "models_comparison.png"
-        plt.savefig(comparison_path, dpi=300, bbox_inches='tight')
-        mlflow.log_artifact(comparison_path)
+        # Save and log to MLflow
+        filename = "models_comparison.png"
+        plt.savefig(filename)
+        mlflow.log_artifact(filename)
         plt.close()
         
-        # Clean up temporary file
-        if os.path.exists(comparison_path):
-            os.remove(comparison_path)
+        # Clean up file
+        import os
+        if os.path.exists(filename):
+            os.remove(filename)
 
 
-def setup_mlflow_ui():
-    """
-    Instructions for setting up MLflow UI.
-    """
-    print("To view MLflow UI, run the following command in your terminal:")
-    print("mlflow ui --backend-store-uri file:./mlruns")
-    print("Then open http://localhost:5000 in your browser")
-
-
-def main():
-    """Test MLflow setup."""
-    tracker = MLflowTracker()
-    
-    with tracker.start_run(run_name="test_run"):
-        # Test logging
-        tracker.log_metrics({"test_accuracy": 0.95, "test_precision": 0.94})
-        mlflow.log_param("test_param", "test_value")
-        logger.info("Test run completed successfully")
-    
-    setup_mlflow_ui()
-
-
+# Simple test
 if __name__ == "__main__":
-    main()
+    tracker = MLflowTracker()
+    print("MLflow tracker initialized successfully!")

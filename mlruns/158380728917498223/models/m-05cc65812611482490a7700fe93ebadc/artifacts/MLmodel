@@ -1,0 +1,22 @@
+artifact_path: file:///home/tlha/Desktop/mlops-assignment-1/mlruns/158380728917498223/models/m-05cc65812611482490a7700fe93ebadc/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.3
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.7.1
+mlflow_version: 3.3.2
+model_id: m-05cc65812611482490a7700fe93ebadc
+model_size_bytes: 3695
+model_uuid: m-05cc65812611482490a7700fe93ebadc
+prompts: null
+run_id: 53c300da68e2472eb45c5ff760488f17
+utc_time_created: '2025-09-18 17:09:49.993687'

@@ -1,122 +1,69 @@
 """
-Data loading utilities for the MLOps assignment.
+Simple data loading for MLOps assignment.
+This script loads the Iris dataset and splits it for training and testing.
 """
 
-import pandas as pd
 import numpy as np
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from typing import Tuple, Dict, Any
-import logging
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class DataLoader:
-    """Class to handle data loading and preprocessing for ML models."""
+    """Simple class to load and prepare the Iris dataset."""
     
-    def __init__(self, dataset_name: str = "iris", test_size: float = 0.2, random_state: int = 42):
-        """
-        Initialize the DataLoader.
-        
-        Args:
-            dataset_name: Name of the dataset to load
-            test_size: Proportion of dataset to include in test split
-            random_state: Random state for reproducibility
-        """
-        self.dataset_name = dataset_name
-        self.test_size = test_size
-        self.random_state = random_state
+    def __init__(self):
+        """Initialize the data loader with basic settings."""
         self.scaler = StandardScaler()
         
-    def load_iris_dataset(self) -> Tuple[np.ndarray, np.ndarray, Dict[str, Any]]:
-        """
-        Load the Iris dataset.
+    def load_iris_data(self):
+        """Load the Iris dataset and return features and labels."""
+        print("Loading Iris dataset...")
         
-        Returns:
-            Tuple of (features, targets, metadata)
-        """
-        logger.info("Loading Iris dataset...")
-        
-        # Load the dataset
+        # Load the built-in Iris dataset
         iris = load_iris()
-        X, y = iris.data, iris.target
+        X = iris.data  # Features: sepal/petal length and width
+        y = iris.target  # Labels: 0=setosa, 1=versicolor, 2=virginica
         
-        # Create metadata
-        metadata = {
-            'feature_names': iris.feature_names,
-            'target_names': iris.target_names,
-            'n_samples': X.shape[0],
-            'n_features': X.shape[1],
-            'n_classes': len(iris.target_names),
-            'dataset_description': iris.DESCR
-        }
-        
-        logger.info(f"Dataset loaded: {metadata['n_samples']} samples, {metadata['n_features']} features, {metadata['n_classes']} classes")
-        
-        return X, y, metadata
+        print(f"Dataset loaded: {X.shape[0]} samples, {X.shape[1]} features")
+        return X, y
     
-    def split_and_preprocess(self, X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Split data into train/test sets and apply preprocessing.
+    def prepare_data(self, X, y):
+        """Split data into training and testing sets and scale the features."""
+        print("Splitting data into train (80%) and test (20%) sets...")
         
-        Args:
-            X: Feature matrix
-            y: Target vector
-            
-        Returns:
-            Tuple of (X_train, X_test, y_train, y_test)
-        """
-        logger.info("Splitting data into train/test sets...")
-        
-        # Split the data
+        # Split the data - 80% for training, 20% for testing
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y, 
-            test_size=self.test_size, 
-            random_state=self.random_state,
-            stratify=y  # Ensure balanced splits
+            X, y, test_size=0.2, random_state=42, stratify=y
         )
         
-        # Standardize features
-        logger.info("Standardizing features...")
+        # Scale the features to have mean=0 and std=1
+        print("Scaling features...")
         X_train_scaled = self.scaler.fit_transform(X_train)
         X_test_scaled = self.scaler.transform(X_test)
         
-        logger.info(f"Train set: {X_train_scaled.shape[0]} samples")
-        logger.info(f"Test set: {X_test_scaled.shape[0]} samples")
+        print(f"Training set: {X_train_scaled.shape[0]} samples")
+        print(f"Test set: {X_test_scaled.shape[0]} samples")
         
         return X_train_scaled, X_test_scaled, y_train, y_test
     
-    def get_data(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Dict[str, Any]]:
-        """
-        Complete data loading pipeline.
+    def get_data(self):
+        """Get the complete prepared dataset for machine learning."""
+        # Load the Iris dataset
+        X, y = self.load_iris_data()
         
-        Returns:
-            Tuple of (X_train, X_test, y_train, y_test, metadata)
-        """
-        if self.dataset_name.lower() == "iris":
-            X, y, metadata = self.load_iris_dataset()
-        else:
-            raise ValueError(f"Dataset '{self.dataset_name}' not supported")
+        # Split and scale the data
+        X_train, X_test, y_train, y_test = self.prepare_data(X, y)
         
-        X_train, X_test, y_train, y_test = self.split_and_preprocess(X, y)
-        
-        return X_train, X_test, y_train, y_test, metadata
+        return X_train, X_test, y_train, y_test
 
 
-def main():
-    """Test the data loader functionality."""
-    loader = DataLoader()
-    X_train, X_test, y_train, y_test, metadata = loader.get_data()
-    
-    print("Data loading completed successfully!")
-    print(f"Training set shape: {X_train.shape}")
-    print(f"Test set shape: {X_test.shape}")
-    print(f"Classes: {metadata['target_names']}")
-
-
+# Simple test of the data loader
 if __name__ == "__main__":
-    main()
+    loader = DataLoader()
+    X_train, X_test, y_train, y_test = loader.get_data()
+    
+    print("Data loading completed!")
+    print(f"Training set: {X_train.shape}")
+    print(f"Test set: {X_test.shape}")
+    print("Ready for model training!")
