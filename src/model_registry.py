@@ -69,19 +69,41 @@ class SimpleModelRegistry:
             return
         
         try:
-            # Get model URI from the best run
-            model_uri = f"runs:/{best_run.info.run_id}/model"
+            # Get all runs again to find training runs
+            runs = self.client.search_runs(
+                experiment_ids=[self.experiment_id],
+                order_by=["start_time DESC"]
+            )
+            
+            # Find the corresponding training run (which has the model artifact)
+            model_type = best_run.info.run_name.split('_')[0]  # e.g., "svm" from "svm_evaluation"
+            training_run_name = f"{model_type}_training"
+            
+            # Find the training run with the model
+            training_run = None
+            for run in runs:
+                if run.info.run_name == training_run_name:
+                    training_run = run
+                    break
+            
+            if training_run is None:
+                print(f"Error: Could not find training run '{training_run_name}' with model artifact")
+                return
+            
+            # Get model URI from the training run (which has the model artifact)
+            model_uri = f"runs:/{training_run.info.run_id}/model"
             
             # Register the model with a simple name
             model_name = "iris-best-classifier"
             
             print(f"Registering model: {model_name}")
+            print(f"Using model from training run: {training_run_name}")
             
             model_version = mlflow.register_model(
                 model_uri=model_uri,
                 name=model_name,
                 tags={
-                    "model_type": best_run.info.run_name.split('_')[0],
+                    "model_type": model_type,
                     "best_accuracy": str(best_accuracy),
                     "registration_date": str(datetime.now().date())
                 }

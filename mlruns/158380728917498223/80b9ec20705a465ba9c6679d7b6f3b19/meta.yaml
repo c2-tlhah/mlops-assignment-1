@@ -1,0 +1,14 @@
+artifact_uri: file:///home/tlha/Desktop/mlops-assignment-1/mlruns/158380728917498223/80b9ec20705a465ba9c6679d7b6f3b19/artifacts
+end_time: 1758215696646
+entry_point_name: ''
+experiment_id: '158380728917498223'
+lifecycle_stage: active
+run_id: 80b9ec20705a465ba9c6679d7b6f3b19
+run_name: random_forest_evaluation
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758215696412
+status: 3
+tags: []
+user_id: tlha

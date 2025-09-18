@@ -1,0 +1,14 @@
+artifact_uri: file:///home/tlha/Desktop/mlops-assignment-1/mlruns/158380728917498223/c0c01c500dbf48dd80335613ae230dc9/artifacts
+end_time: 1758215579904
+entry_point_name: ''
+experiment_id: '158380728917498223'
+lifecycle_stage: active
+run_id: c0c01c500dbf48dd80335613ae230dc9
+run_name: models_comparison
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758215579711
+status: 3
+tags: []
+user_id: tlha

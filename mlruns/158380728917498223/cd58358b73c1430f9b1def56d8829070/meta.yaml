@@ -1,0 +1,14 @@
+artifact_uri: file:///home/tlha/Desktop/mlops-assignment-1/mlruns/158380728917498223/cd58358b73c1430f9b1def56d8829070/artifacts
+end_time: 1758215689051
+entry_point_name: ''
+experiment_id: '158380728917498223'
+lifecycle_stage: active
+run_id: cd58358b73c1430f9b1def56d8829070
+run_name: logistic_regression_training
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758215672108
+status: 3
+tags: []
+user_id: tlha
